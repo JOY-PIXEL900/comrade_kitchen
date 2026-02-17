@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ComradeKitchen | Budget Meal Planner</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #e74c3c;
+            --secondary: #27ae60;
+            --accent: #f39c12;
+            --dark: #2c3e50;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            position: relative;
+            background: white;
+        }
+
+       
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('food.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 1;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+      
+        header {
+            text-align: center;
+            padding: 35px 20px;
+            background: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            border: 3px solid var(--primary);
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .tagline {
+            font-size: 1.15rem;
+            color: var(--dark);
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .budget-box {
+            display: inline-block;
+            padding: 18px 35px;
+            background: linear-gradient(135deg, var(--secondary), #2ecc71);
+            border-radius: 50px;
+            color: white;
+            font-size: 1.7rem;
+            font-weight: 800;
+            box-shadow: 0 8px 25px rgba(39,174,96,0.4);
+        }
+
+        
+        .ingredients-section {
+            background: rgba(255, 255, 255, 0.97);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .ingredient-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .ingredient-item {
+            cursor: pointer;
+        }
+
+        .ingredient-item input {
+            display: none;
+        }
+
+        .ingredient-item label {
+            display: block;
+            padding: 14px 10px;
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .ingredient-item input:checked + label {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(231,76,60,0.4);
+        }
+
+        .ingredient-item label:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+       
+        .generate-btn {
+            width: 100%;
+            padding: 22px;
+            font-size: 1.4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), #e60d8f);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 30px rgba(231,76,60,0.4);
+            transition: all 0.3s ease;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(231,76,60,0.5);
+        }
+
+        
+        .recipe-result {
+            background: rgba(255, 255, 255, 0.97);
+            padding: 35px;
+            border-radius: 20px;
+            margin-top: 30px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.2);
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .recipe-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .recipe-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--dark);
+        }
+
+        .recipe-cost {
+            background: var(--secondary);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.6rem;
+            font-weight: 800;
+            box-shadow: 0 8px 20px rgba(39,174,96,0.3);
+        }
+
+        .recipe-content {
+            line-height: 1.9;
+            font-size: 1.05rem;
+            color: var(--dark);
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 5px solid var(--primary);
+            margin: 20px 0;
+        }
+
+        .ingredients-used {
+            margin: 20px 0;
+            padding: 18px;
+            background: linear-gradient(135deg, #fff5f5, #ffe9e9);
+            border-radius: 12px;
+            border: 2px dashed var(--primary);
+        }
+
+        .ingredients-used h3 {
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+
+        .ingredient-tag {
+            display: inline-block;
+            background: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin: 5px;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .reset-btn {
+            width: 100%;
+            padding: 16px;
+            background: #95a5a6;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .reset-btn:hover {
+            background: #7f8c8d;
+            transform: translateY(-2px);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            .ingredient-grid {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍽️ COMRADE KITCHEN 🍽️</h1>
+            <p class="tagline">Budget-Friendly Campus Meals | Kenyan Student Edition</p>
+            <div class="budget-box">
+                💰 Budget: <span id="live-total">0</span> KES
+            </div>
+        </header>
+
+        <!-- Carbs -->
+        <div class="ingredients-section">
+            <h2 class="section-title"><span>🍚</span> Carbs (Energy Base)</h2>
+            <div class="ingredient-grid">
+                <div class="ingredient-item">
+                    <input type="checkbox" id="rice" value="Rice" data-price="30" onchange="updateBudget()">
+                    <label for="rice">🍚 Rice<br><small>30 KES</small></label>
+                </div>
+                <div class="ingredient-item">
+                    <input type="checkbox" id="ugali" value="Ugali" data-price="20" onchange="updateBudget()">
+                    <label for="ugali"> Ugali<br><small>20 KES</small></label>
+                </div>
+                <div class="ingredient-item">
+                    <input type="checkbox" id="chapati" value="Chapati" data-price="25" onchange="updateBudget()">
+                    <label for="chapati"> Chapati<br><small>25 KES</small></label>
+                </div>
+                <div class="ingredient-item">
+                    <input type="checkbox" id="spaghetti" value="Spaghetti" data-price="35" onchange="updateBudget()">
+                    <label for="spaghetti">🍝 Spaghetti<br><small>35 KES</small></label>
+                </div>
+                <div class="ingredient-item">
+                    <input type="checkbox" id="githeri" value="Githeri" data-price="40" onchange="updateBudget()">
+                    <label for="githeri"> Githeri<br><small>40 KES</small></label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Proteins -->
+        <div class="ingredients-section">
+            <h2 class="section-title"><span>🥩</span> Proteins (Build Muscle)</h2>
+            <div class="ingredient-grid">
+                <div class="ingredient-item">
+                    <input type="checkbox" id="beans" value="Beans" data-price="40" onchange="updateBudget()">
+                    <label for="beans">🫘 Beans<br><small>40 KES</small></label>
+                </div>
+                <div class="ingredient-item">
+                    <input type="checkbox" id="ndengu" value="Ndengu" data-price="35" onchange="updateBudget()">
+                    <label for="ndengu">🟢 Ndengu<br><small>35 KES</small></label>
+                </div>
+                <div class="ingredient-item">
+                    <input type="checkbox" id="eggs" value="Eggs" data-price="30" onchange="updateBudget()">
+                    <label for="eggs">🥚 Eggs (2)<br><small>30 KES</small></label>
+                </div>
+                <div class="ingredient-item">
+                    <input type="checkbox" id="omena" value="Omena" data-price="50" onchange="updateBudget()">
+                    <label for="omena">🐟 Omena<br><small>50 KES</small></label>
+                </div>
+                <div class="ingredient-item">
+                    <input type="checkbox" id="kamande" value="Kamande" data-price="35" onchange="updateBudget()">
+                    <label for="kamande">🟤 Kamande<br><small>35 KES</small></label>
+                </div>
+                <div class="ingredient-item">
+                    <input type="checkbox" id="greenpeas" value="Green Peas" data-price="30" onchange="updateBudget()">
+                    <label for="greenpeas">🫛 Green Peas<br><small>30 KES</small></label>
+                </div>
+                <div class="ingredient-item">
+                    <input type="checkbox" id="fish" value="Fish" data-price="120" onchange="updateBudget()">
+                    <label for="fish">🐠 Fish<br><small>120 KES</small></label>
+                </div>
+                <div class="ingredient-item">
+                    <input type="checkbox" id="chicken" value="Chicken" data-price="150" onchange="updateBudget()">
+                    <label for="chicken">🍗 Chicken<br><small>150 KES</small></label>
+                </div>
+                <div class="ingredient-item">
+                    <input type="checkbox" id="beef" value="Beef" data-price="100" onchange="updateBudget()">
+                    <label for="beef">🥩 Beef<br><small>100 KES</small></label>
+                </div>
+                <div class="ingredient-item">
+                    <input type="checkbox" id="pork" value="Pork" data-price="130" onchange="updateBudget()">
+                    <label for="pork">🥓 Pork<br><small>130 KES</small></label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vegetables -->
+        <div class="ingredients-section">
+            <h2 class="section-title"><span>🥬</span> Vegetables (Vitamins & Minerals)</h2>
+            <div class="ingredient-grid">
+                <div class="ingredient-item">
+                    <input type="checkbox" id="sukumawiki" value="Sukuma Wiki" data-price="15" onchange="updateBudget()">
+                    <label for="sukumawiki">🥬 Sukuma Wiki<br><small>15 KES</small></label>
+                </div>
+                <div class="ingredient-item">
+                    <input type="checkbox" id="cabbage" value="Cabbage" data-price="25" onchange="updateBudget()">
+                    <label for="cabbage">🥬 Cabbage<br><small>25 KES</small></label>
+                </div>
+                <div class="ingredient-item">
+                    <input type="checkbox" id="spinach" value="Spinach" data-price="20" onchange="updateBudget()">
+                    <label for="spinach">🥬 Spinach<br><small>20 KES</small></label>
+                </div>
+                <div class="ingredient-item">
+                    <input type="checkbox" id="terere" value="Terere" data-price="15" onchange="updateBudget()">
+                    <label for="terere">🌿 Terere<br><small>15 KES</small></label>
+                </div>
+                <div class="ingredient-item">
+                    <input type="checkbox" id="tomatoes" value="Tomatoes" data-price="20" onchange="updateBudget()">
+                    <label for="tomatoes">🍅 Tomatoes<br><small>20 KES</small></label>
+                </div>
+                <div class="ingredient-item">
+                    <input type="checkbox" id="onions" value="Onions" data-price="15" onchange="updateBudget()">
+                    <label for="onions">🧅 Onions<br><small>15 KES</small></label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Extras -->
+        <div class="ingredients-section">
+            <h2 class="section-title"><span>🍎</span> Extras (Snacks & Drinks)</h2>
+            <div class="ingredient-grid">
+                <div class="ingredient-item">
+                    <input type="checkbox" id="avocado" value="Avocado" data-price="20" onchange="updateBudget()">
+                    <label for="avocado">🥑 Avocado<br><small>20 KES</small></label>
+                </div>
+                <div class="ingredient-item">
+                    <input type="checkbox" id="banana" value="Banana" data-price="10" onchange="updateBudget()">
+                    <label for="banana">🍌 Banana<br><small>10 KES</small></label>
+                </div>
+                <div class="ingredient-item">
+                    <input type="checkbox" id="mandazi" value="Mandazi" data-price="15" onchange="updateBudget()">
+                    <label for="mandazi">🍩 Mandazi<br><small>15 KES</small></label>
+                </div>
+                <div class="ingredient-item">
+                    <input type="checkbox" id="milk" value="Milk" data-price="30" onchange="updateBudget()">
+                    <label for="milk">🥛 Milk<br><small>30 KES</small></label>
+                </div>
+                <div class="ingredient-item">
+                    <input type="checkbox" id="tea" value="Tea" data-price="20" onchange="updateBudget()">
+                    <label for="tea">🍵 Kenyan Chai<br><small>20 KES</small></label>
+                </div>
+                <div class="ingredient-item">
+                    <input type="checkbox" id="yoghurt" value="Yoghurt" data-price="40" onchange="updateBudget()">
+                    <label for="yoghurt">🥤 Yoghurt<br><small>40 KES</small></label>
+                </div>
+            </div>
+        </div>
+
+        <button class="generate-btn" onclick="generateMeal()">
+             Generate My Meal Plan 
+        </button>
+
+        <div id="recipe-result" class="recipe-result hidden">
+            <div class="recipe-header">
+                <h2 class="recipe-title" id="meal-title"></h2>
+                <div class="recipe-cost" id="meal-cost"></div>
+            </div>
+            <div class="ingredients-used" id="selected-ingredients"></div>
+            <div class="recipe-content" id="cooking-instructions"></div>
+            <button class="reset-btn" onclick="resetAll()">🔄 Start Fresh</button>
+        </div>
+    </div>
+
+    <script>
+        // Authentic Kenyan student recipes
+        const recipes = {
+            "Ugali,Sukuma Wiki": {
+                title: "Classic Ugali & Sukuma Wiki",
+                recipe: "Boil 3 cups water. Add maize flour bit by bit while stirring with a wooden spoon until thick and firm (about 5-7 mins). For sukuma: Heat oil, fry onions, add chopped sukuma wiki, tomatoes, salt. Cook 5-10 minutes. The campus staple! Eat with your hands - pinch ugali, make a ball, scoop the sukuma. Serves 2.",
+                tip: "Don't overcook sukuma - it should be slightly crunchy!"
+            },
+            "Rice,Beans": {
+                title: "Rice & Beans (School Special)",
+                recipe: "Cook rice separately. For beans: Fry onions until brown, add tomatoes and pre-boiled beans with 1/2 cup water. Add salt, Royco cube if you have. Simmer 15 mins. The Wednesday/Saturday hostel classic! Serves 2-3.",
+                tip: "Add a bit of cooking oil to beans for extra flavor"
+            },
+            "Chapati,Beans": {
+                title: "Chapo Madondo",
+                recipe: "Make or buy chapati (3-4 pieces at 20 KES each). Prepare thick bean stew: Fry onions, add tomatoes, boiled beans, salt, and Royco. Cook until thick and 'madondo-like'. The ultimate comrade combo! Dip chapati in the stew. Serves 2.",
+                tip: "Beans should be thick, not watery - that's the secret!"
+            },
+            "Chapati,Ndengu": {
+                title: "Chapo Ndengu (Student Favorite)",
+                recipe: "Boil ndengu (green grams) until soft. Fry onions and garlic, add tomatoes, then add the ndengu. Add salt, Royco cube, let it simmer and thicken. Serve hot with soft chapatis. Very filling! Serves 2.",
+                tip: "Add a little curry powder for extra flavor"
+            },
+            "Githeri": {
+                title: "Kamjesh Special",
+                recipe: "Cook pre-mixed maize and beans until soft (or use canned). In a pan, fry onions, add tomatoes, curry powder, salt. Add the githeri, mix well, add 1/2 cup water. Simmer 15 mins. Add potatoes if you have. Campus gold! Serves 3-4.",
+                tip: "Tastes even better the next day!"
+            },
+            "Ugali,Omena": {
+                title: "Ugali & Crunchy Omena",
+                recipe: "Wash omena in hot water, drain well. Deep fry until VERY crispy (don't add water/soup!). Separately, fry onions, tomatoes, and green chili. Mix with omena. Make thick ugali. Serve together. Luo delicacy! Serves 2-3.",
+                tip: "Omena must be crunchy - never add soup or it becomes soggy!"
+            },
+            "Rice,Ndengu": {
+                title: "Rice & Ndengu Combo",
+                recipe: "Cook rice until fluffy. For ndengu: Fry onions and garlic, add boiled green grams, tomatoes, salt, beef cube. Let it thicken and develop flavor. Mix and serve. Healthy protein boost! Serves 2.",
+                tip: "Don't make ndengu too watery - it should be thick"
+            },
+            "Spaghetti,Eggs": {
+                title: "Quick Spaghetti Omelette",
+                recipe: "Boil spaghetti with salt. Beat 2 eggs with milk and pepper. Heat oil, fry onions, add cooked spaghetti, pour eggs over, scramble everything together. The 10-minute miracle! Serves 1-2.",
+                tip: "Don't overcook the eggs - keep them soft and fluffy"
+            },
+            "Ugali,Fish": {
+                title: "Ugali & Fried Fish",
+                recipe: "Season fish with salt, lemon, garlic. Fry until crispy and golden. Make thick ugali. For soup: Fry onions and tomatoes with a little water. Serve fish on top of ugali with the soup. Lakeside special! Serves 2.",
+                tip: "Make sure fish is completely dry before frying for extra crispiness"
+            },
+            "Chapati,Eggs": {
+                title: "Chapo Mayai (Street Food Classic)",
+                recipe: "Make or warm chapati. Beat 2 eggs with onions, salt, pepper. Pour egg mixture on chapati in hot pan, fold chapati over eggs. Flip and cook both sides. Dar es Salaam street food favorite! Serves 1.",
+                tip: "Don't let the eggs fully set before folding - they should be slightly runny"
+            },
+            "Mandazi,Tea": {
+                title: "Mandazi & Kenyan Chai",
+                recipe: "Buy or make mandazi (triangle-shaped fried dough). Brew strong black tea with milk, sugar, and ginger if you have. Dip mandazi in chai. Perfect breakfast! Serves 1-2.",
+                tip: "Heat mandazi slightly if they're from yesterday - tastes fresh again!"
+            },
+            "Rice,Chicken": {
+                title: "Chicken Rice (Sunday Special)",
+                recipe: "Season chicken pieces with salt, garlic, ginger. Fry until golden brown. Cook rice with chicken stock (or use Royco cube with water). Serve chicken on rice with kachumbari (onion-tomato salad). Campus luxury! Serves 2.",
+                tip: "Let chicken marinate for 30 mins if you have time"
+            },
+            "Ugali,Beef": {
+                title: "Ugali & Beef Stew",
+                recipe: "Cut beef into small pieces, boil with salt and onions until tender. Add tomatoes, curry powder, and a little water for gravy. Make thick ugali. Serve together. Filling and satisfying! Serves 2-3.",
+                tip: "Beef tastes better when boiled with a beef cube"
+            },
+            "Chapati,Avocado": {
+                title: "Avocado Chapo Wrap",
+                recipe: "Mash ripe avocado with onions, tomatoes, lemon juice, and salt. Spread on warm chapati. Roll it up. Quick, healthy, delicious! Campus health meal. Serves 1.",
+                tip: "Add a little chili for extra kick!"
+            },
+            "Banana,Milk": {
+                title: "Energy Banana Smoothie",
+                recipe: "Blend 2 ripe bananas with milk and a spoonful of sugar. Add ice if available. Instant energy drink before or after class! Serves 1-2.",
+                tip: "Use frozen bananas for a thicker, creamier smoothie"
+            }
+        };
+
+        function updateBudget() {
+            let total = 0;
+            document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+                total += parseInt(cb.getAttribute('data-price'));
+            });
+            document.getElementById('live-total').textContent = total;
+        }
+
+        function generateMeal() {
+            const checked = document.querySelectorAll('input[type="checkbox"]:checked');
+            
+            if (checked.length === 0) {
+                alert('Eeeh comrade! Please select at least one ingredient! 😊');
+                return;
+            }
+
+            const selected = Array.from(checked).map(cb => cb.value).sort();
+            const key = selected.join(',');
+            
+            let totalCost = 0;
+            checked.forEach(cb => totalCost += parseInt(cb.getAttribute('data-price')));
+
+            // Find matching recipe
+            let meal = recipes[key];
+            
+            // Try partial matches
+            if (!meal) {
+                const keys = Object.keys(recipes);
+                for (let recipeKey of keys) {
+                    const recipeIngredients = recipeKey.split(',');
+                    if (recipeIngredients.every(ing => selected.includes(ing))) {
+                        meal = recipes[recipeKey];
+                        break;
+                    }
+                }
+            }
+
+            // Fallback generic meal
+            if (!meal) {
+                meal = {
+                    title: "Comrade's Creative Mix",
+                    recipe: "Here's what you do: Heat oil in a pan, fry onions until golden. Add your proteins first and cook well. Then add vegetables with tomatoes. Season with salt and Royco if you have. Add a little water and let it simmer for 15-20 minutes. Serve with your chosen carbs. Creativity ndio key ya campus life! 🎨",
+                    tip: "Always taste and adjust seasoning - that's the secret to good food!"
+                };
+            }
+
+            // Display result
+            document.getElementById('meal-title').textContent = meal.title;
+            document.getElementById('meal-cost').innerHTML = `💰 ${totalCost} KES`;
+            document.getElementById('cooking-instructions').innerHTML = `
+                <strong>📝 How to Cook:</strong><br>${meal.recipe}<br><br>
+                <strong>💡 Pro Tip:</strong> ${meal.tip}
+            `;
+
+            const ingredientTags = selected.map(ing => 
+                `<span class="ingredient-tag">${ing}</span>`
+            ).join('');
+            document.getElementById('selected-ingredients').innerHTML = `
+                <h3>🛒 Your Selected Ingredients:</h3>
+                ${ingredientTags}
+            `;
+
+            document.getElementById('recipe-result').classList.remove('hidden');
+            document.getElementById('recipe-result').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function resetAll() {
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            document.getElementById('live-total').textContent = '0';
+            document.getElementById('recipe-result').classList.add('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
